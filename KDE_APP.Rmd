@@ -1,0 +1,91 @@
+---
+title: "Shiny Application and Reproducible Pitch"
+author: "Bing Hu"
+date: "April 18, 2021"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction:
+Thisis a simple Shiny App generated for peer assessed assignment. The Assignment includes 2 parts. First, you will create a Shiny application and deploy it on Rstudio's servers. Second, you will use Slidify or Rstudio Presenter to prepare a reproducible pitch presentation about your application.
+
+Your Shiny Application
+
+- Write a shiny application with associated supporting documentation. The documentation should be thought of as whatever a user will need to get started using your application.
+- Deploy the application on Rstudio's shiny server
+- Share the application link by pasting it into the provided text box
+- Share your server.R and ui.R code on github
+
+This APP is for KDE Estimation. In statistics, kernel density estimation (KDE) is a non-parametric way to estimate the probability density function of a random variable. Kernel density estimation is a fundamental data smoothing problem where inferences about the population are made, based on a finite data sample. 
+Let (x1, x2, …, xn) be independent and identically distributed samples drawn from some univariate distribution with an unknown density ƒ at any given point x. We are interested in estimating the shape of this function ƒ. kernal is the a non-negative function of kernel density estimator. A range of kernel functions are commonly used: Uniform, triangular, biweight, triweight, Epanechnikov, Gaussian, and others. 
+Kernel density estimates are closely related to histograms, but can be endowed with properties such as smoothness or continuity by using a suitable kernel. Number of bins and Number of observations will suport the histogram. Once check the check box of "Show Density Estimate", you can select kernal type and bandwidth for estimate. Detailed input and output detail shown in the next section.
+
+
+
+## Inputs and Outputs
+
+[Here embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.]
+
+```{r eruptions, echo=FALSE}
+inputPanel(
+      textInput(inputId = "n_breaks", 
+                label = "Please enter an integer from 1 - 50 for # of bins: ", 
+                value = "25", width = NULL, placeholder = NULL),
+      sliderInput(inputId = "observations",
+                  label = "Number of observations:",
+                  min = 10,
+                  max = 1000,
+                  value = 500),
+      checkboxInput(inputId = "density",
+                    label = strong("Show density estimate"),
+                    value = FALSE),
+      conditionalPanel(condition = "input.density == true",
+                       sliderInput(inputId = "bw_adjust",
+                                   label = "Bandwidth adjustment:",
+                                   min = 0.2, max = 2, value = 1, step = 0.2)),
+      
+      
+      conditionalPanel(condition = "input.density == true",
+                       radioButtons(inputId = "kernel", label = h3("Type of Kernel:"),
+                                    choices = list("Gaussian" = "gaussian",
+                                                   "Epanechnikov" = "epanechnikov",
+                                                   "Rectangular" = "rectangular",
+                                                   "Triangular" = "triangular", 
+                                                   "Biweight" = "biweight", 
+                                                   "Optcosine" = "optcosine"), 
+                                    selected = "Gaussian")
+  
+  
+      )
+)
+
+renderPlot({
+  hist(rnorm(input$observations,mean=0,sd=1),
+         probability = TRUE,
+         breaks = as.numeric(input$n_breaks),
+         xlab = "Observations",
+         main = "Standard Normal Distribution")
+    
+    
+    if (input$density) {
+      dens <- density(rnorm(input$observations,mean=0,sd=1),
+                      kernel = input$kernel,
+                      adjust = input$bw_adjust)
+      lines(dens, col = "blue")
+    }
+})
+```
+
+
+Note the use of the `height` parameter to determine how much vertical space the embedded application should occupy.
+
+You can also use the `shinyApp` function to define an application inline rather then in an external directory.
+
+In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
+
+
+
